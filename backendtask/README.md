@@ -34,11 +34,11 @@ https://make.wordpress.org/core/handbook/tutorials/installing-a-local-server/wam
 
 Screenshots of the different pages are:
 
-![](/screenshots/loginpage.png)
-![](/screenshots/dashboard.png)
-![](/screenshots/addjounal.png)
-![](/screenshots/reviewjounal.png)
-![](/screenshots/signuppage.png)
-![](/screenshots/tablejournal.png)
-![](/screenshots/tablepeoplelist.png)
+![](backendtask/screenshots/loginpage.png)
+![](backendtask/screenshots/dashboard.png)
+![](backendtask/screenshots/addjounal.png)
+![](backendtask/screenshots/reviewjounal.png)
+![](backendtask/screenshots/signuppage.png)
+![](backendtask/screenshots/tablejournal.png)
+![](backendtask/screenshots/tablepeoplelist.png)
 
