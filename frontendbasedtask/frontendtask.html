@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My weather Api map</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body background="http://wallpapercave.com/wp/081mR76.jpg">
+<script type="text/javascript">
+	var globalcity,search=false;
+</script>
+<style type="text/css">
+	#map{
+		height:400px;
+		width: 600px;
+		margin-left:auto; margin-right:auto;
+		border:1px solid black;
+		border-radius: 5px;
+	}
+	h1{
+		text-align: center;
+		font-size: 170%;
+		font-family: cursive;
+		border-radius: 4px;
+		border:3px solid black;
+		background-color: #1741A9;
+		color: white;
+	}
+	p{
+		text-align: center;
+		font-family: cursive;
+		font-size: 120%;
+		border-radius: 1px;
+		background-color: blue;
+		color: white;
+
+
+	}
+	label{
+		font-family: Times;
+		background-color: black;
+		color: white;
+	}
+	hr{
+		size: 10px;
+	}
+
+	.weather-app {
+    margin: auto;
+    width: 300px;
+    height: 160px;
+    border: 1px solid black;
+    border-radius: 20px;
+    box-shadow: 10px 10px 50px #888888;
+    overflow: hidden;
+    text-align:center;
+    font-family: "Mono";
+}
+
+.left {
+    float: left;
+    background: #262626;
+    padding:10px;
+    width:150px;
+    height:100%;
+    color:white;
+}
+
+.temperature {
+    margin-top:30px;
+    margin-bottom:5px;
+    font-size:32px;
+    font-weight: bold;
+    width: 150px;
+}
+.temperature1 {
+    margin-top:30px;
+    margin-bottom:5px;
+    font-size:32px;
+    font-weight: bold;
+    width: 150px;
+}
+
+
+.location {
+    font-size: 18px;
+    width:100%;
+    width:150px;
+}
+.location1 {
+    font-size: 18px;
+    width:100%;
+    width:150px;
+}
+
+.right {
+    float: right;
+    width:130px;
+    height:100%;
+}
+
+
+.top {
+    height: 100px;
+    width: 100%;
+    margin: auto;
+    background: #cec;
+}
+
+.top img {
+    margin-top: 15px;
+}
+
+.bottom {
+    height: 70px;
+    background: #669999;
+    color: white;
+    font-weight: bold;
+}
+
+.humidity {
+    padding: 8px;
+}
+.humidity1 {
+    padding: 8px;
+}
+.wind {
+}
+.wind1 {
+}
+div.search{
+	align-items: center;
+	text-align: center;
+	font-size: 130%;
+}
+
+</style>
+<h1>Weather Application For Each Location</h1>
+
+<p>Method 1: Click on any location in the map to find the temperature of that location in the box below it</p>
+<div id="map"></div>
+<script type="text/javascript">
+	function initMap()
+	{
+		var options={
+			zoom:14,
+			center:{lat:13.0826802,lng:80.2707184}
+		}
+
+		var map=new google.maps.Map(document.getElementById("map"),options);
+if(search)
+{
+	var geocoder= new google.maps.Geocoder();
+	geocoder.geocode({'address':globalcity},function(results,status){
+		if (status == google.maps.GeocoderStatus.OK) {
+		addmarker(results[0].geometry.location.lat(),results[0].geometry.location.lng());	
+		map.panTo({lat:results[0].geometry.location.lat(),lng:results[0].geometry.location.lng()});
+		}
+	});
+	search=false;
+}
+
+		google.maps.event.addListener(map,"click",function(e){
+        var latlng=e.latLng;
+          updatebylatitudeandlongitude(latlng.lat(),latlng.lng());
+          addmarker(latlng.lat(),latlng.lng());
+		});
+			var marker;
+		function addmarker(latitude,longitude)
+	{ 
+		if(marker)
+			marker.setPosition({lat:latitude,lng:longitude});
+		else
+		  {marker=new google.maps.Marker({
+			    	position:{lat:latitude,lng:longitude},
+			    	map:map
+			    });}
+		var info=new google.maps.InfoWindow({
+			content:'<h1>latitude: '+latitude+' longitude: '+longitude+'</h1>'
+		});
+		marker.addListener('click',function(){
+			info.open(map,marker);
+		});
+	}
+	}
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDremU7RAUTZxFmtaCZL8fUpXMv3g-p1gM&callback=initMap"
+    async defer></script>
+<br>
+<div class="weather-app">
+<div class="left">
+<div class="temperature"><span id="temperature">0</span>&#176</div>	
+<div class="location"><span id="location">Unknown</span></div>
+</div>
+<div class="right">
+<div class="top">
+<img id="icon" width="75px" src="imgs/codes/200.png" />
+</div>
+<div class="bottom">
+<div class="humidity">
+<img src="imgs/humidity.png" height="16px"/>
+<span id="humidity">0</span>%</div>
+<div class="wind">
+<span id="wind">0</span> mph <span id="direction">N</span>
+</div>
+</div>
+</div>
+</div>
+<hr>
+<script type="text/javascript">
+	var APPID="d5109db637b130e6dbd2bbe1c2b1a7c9";
+	var temp,loc,humidity,icon,wind,direction;
+	function sendrequest(urlll)
+	{
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange=function(){
+			if(xmlhttp.readyState==4&&xmlhttp.status==200)
+			{
+				var data=JSON.parse(xmlhttp.responseText);
+				var weather={};
+				weather.icon=data.weather[0].id;
+                weather.humidity=data.main.humidity;
+                weather.wind=data.wind.speed;
+                weather.direction=degreestodirection(data.wind.deg);
+                weather.loc=data.name;
+                weather.temp=Math.round(data.main.temp-273.15);
+                update(weather);
+				
+			}
+
+		};
+		xmlhttp.open("GET",urlll,true);
+		xmlhttp.send();
+	}
+	function degreestodirection(degrees)
+	{
+		var range=360/8;
+		var low=360-range/2;
+		var high=(low+range)%360;
+		var angles=['N','NE','E','SE','S','SW','W','NW'];
+		for(i in angles){
+			if(degrees>=low&&degrees<high)
+				return angles[i];
+
+			low=(low+range)%360;
+			high=(high+range)%360;
+		}
+		return 'N';
+	}
+	function updatebylatitudeandlongitude(lat,lng)
+	{
+		var urlll="http://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lng+"&APPID="+APPID;
+		sendrequest(urlll);
+	}
+function update(weather)
+{
+	wind.innerHTML=weather.wind;
+	direction.innerHTML=weather.direction;
+	humidity.innerHTML=weather.humidity;
+	loc.innerHTML=weather.loc;
+	temp.innerHTML=weather.temp;
+	icon.src="imgs/codes/" + weather.icon + ".png";
+}
+window.onload=function(){
+	temp=document.getElementById("temperature");
+	loc=document.getElementById("location");
+	humidity=document.getElementById("humidity");
+	wind=document.getElementById("wind");
+	direction=document.getElementById("direction");
+	icon=document.getElementById("icon");
+
+	var weather={};
+	weather.wind=3.5;
+	weather.direction='N';
+	weather.humidity=35;
+	weather.loc="Chennai";
+	weather.temp="37";
+	weather.icon=800;
+	update(weather);
+}
+
+
+</script>
+<br>
+<p>Method 2:Search for the location and find its weather conditons directly.</p>
+<div class="search">
+<label for="namecity">Enter the name of the city,country(if needed):</label>
+<input type="text" id="namecity" name="name" required autocomplete="name">
+<br>
+<br>
+<button onclick="searchcity()" id="submitbutton">Submit</button></div>
+<script type="text/javascript">
+	function seturlforlocation(city)
+{var latlng1;
+	var urlll1="http://api.openweathermap.org/data/2.5/weather?q="+city+"&APPID="+APPID;
+	sendrequest(urlll1);
+	globalcity=city;
+	search=true;
+	initMap();
+}
+function searchcity()
+{
+	var textbox=document.getElementById("namecity").value;
+seturlforlocation(textbox);
+}
+</script>
+
+</body>
+</html>
